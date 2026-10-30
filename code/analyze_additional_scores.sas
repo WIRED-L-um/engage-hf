@@ -416,14 +416,14 @@ proc glmselect data=out.additional_scores_wide;
     effect spl = spline(hfc_2022_full_0_12_1  / naturalcubic basis=tpf(noint) 
                            knotmethod=percentiles(3)); 
     model hfc_2022_full_0_12  = spl / selection=none;
-    output out=SplineOut predicted=Fit; /* Output predicted values for plot */
+    output out=SplineOut predicted=Fit; * Output predicted values for plot;
 quit;
 
-/* 3. Plot the Spline with 95% Confidence Intervals */
+* 3. Plot the Spline with 95% Confidence Intervals;
 proc sgplot data=SplineOut;
     title "Restricted Cubic Spline: Predictor vs Score (0-100)";
-    scatter x=hfc_2022_full_0_12_1  y=hfc_2022_full_0_12  / transparency=0.5; /* Raw data */
-    series x=hfc_2022_full_0_12_1  y=Fit / lineattrs=(thickness=3 color=red); /* Predicted curve */
+    scatter x=hfc_2022_full_0_12_1  y=hfc_2022_full_0_12  / transparency=0.5; * Raw data;
+    series x=hfc_2022_full_0_12_1  y=Fit / lineattrs=(thickness=3 color=red); * Predicted curve;
     yaxis label="Score (0-100)" min=0 max=120;
     xaxis label="Predictor Variable (MOS Baseline)";
 run;
@@ -437,7 +437,7 @@ outdesign(addinputvars fullmodel)=SplineBasis;
 quit;
 
 
-/** primary analysis */
+* primary analysis;
 proc glm data=SplineBasis;
 class randomization(ref="Control") study_site sex;
     model hfc_2022_full_0_12  =randomization spl_:   study_site /solution;	lsmeans randomization/cl;
