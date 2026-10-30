@@ -23,27 +23,27 @@ run;
 
 /* Summary statistics */
 
-proc means data=out.score_long n nmiss mean std min max maxdec=1;
+proc means data=out.additional_scores_long n nmiss mean std min max maxdec=1;
 var hfc_2022_full_0_12	modified_hfc_0_10	qto_0_8	qto_percent	ops_0_10	
 kresoja_2024_0_12	modified_kcmo_0_100;
 run;
 /* Insert your path */
 ods pdf file="<path>\Score_Summary.pdf";
 
-proc corr data=out.score_long;
+proc corr data=out.additional_scores_long;
 var hfc_2022_full_0_12	modified_hfc_0_10	qto_0_8	qto_percent	ops_0_10	kresoja_2024_0_12	modified_kcmo_0_100;
 run;
 ods pdf close;
 
-proc corr data=out.score_long;
+proc corr data=out.additional_scores_long;
 var 	qto_0_8	qto_percent;
 run;
-proc corr data=out.score_long;
+proc corr data=out.additional_scores_long;
 var hfc_2022_full_0_12	modified_hfc_0_10	;
 run;
 
 data score1;
-set out.score_long;
+set out.additional_scores_long;
 modified_kcmo_0_100_1=modified_kcmo_0_100;
 qto_percent_1=qto_percent;
 hfc_2022_full_0_12_1=hfc_2022_full_0_12;
@@ -65,7 +65,7 @@ run;
 
 
 data score2;
-set out.score_long;
+set out.additional_scores_long;
 where redcap_event_name ne "consent__enrollmen_arm_1";
 run;
 
@@ -76,13 +76,13 @@ proc sort data=score2;
 by ID;
 run;
 /*Wide dataset created  for performing cubic splines  (KCMO, HFC, modified ones etc. */
-data out.score_wide;
+data out.additional_scores_wide;
 merge score1 score2;
 by ID;
 run;
 
-data out.score_wide;
-set out.score_wide;
+data out.additional_scores_wide;
+set out.additional_scores_wide;
 drop redcap_event_name ;
 run;
 
@@ -92,10 +92,10 @@ ods pdf file="<path>\Score_Analysis.pdf";
 
 /**========================== kresoja =========== **/
 
-proc sort data=out.score_wide;
+proc sort data=out.additional_scores_wide;
 by kresoja_2024_0_12_1;
 run;
-proc glmselect data=out.score_wide;
+proc glmselect data=out.additional_scores_wide;
     effect spl = spline(kresoja_2024_0_12_1  / naturalcubic basis=tpf(noint) 
                            knotmethod=percentiles(3)); 
     model kresoja_2024_0_12  = spl / selection=none;
@@ -112,7 +112,7 @@ proc sgplot data=SplineOut;
 run;
 
 ods select ANOVA ParameterEstimates SplineKnots;
-proc glmselect data=out.score_wide
+proc glmselect data=out.additional_scores_wide
 outdesign(addinputvars fullmodel)=SplineBasis;
     effect spl = spline(kresoja_2024_0_12_1 / naturalcubic basis=tpf(noint) knotmethod=percentiles(3));
     model kresoja_2024_0_12 = spl / selection=none;
@@ -152,10 +152,10 @@ sex study_site resting_sbp ckd_stage_value/solution;	lsmeans randomization/cl;
 run;
 
 
-proc sort data=out.score_wide;
+proc sort data=out.additional_scores_wide;
 by ops_0_10_1;
 run;
-proc glmselect data=out.score_wide;
+proc glmselect data=out.additional_scores_wide;
     effect spl = spline(ops_0_10_1  / naturalcubic basis=tpf(noint) 
                            knotmethod=percentiles(3)); 
     model ops_0_10  = spl / selection=none;
@@ -172,7 +172,7 @@ proc sgplot data=SplineOut;
 run;
 
 ods select ANOVA ParameterEstimates SplineKnots;
-proc glmselect data=out.score_wide
+proc glmselect data=out.additional_scores_wide
 outdesign(addinputvars fullmodel)=SplineBasis;
     effect spl = spline(ops_0_10_1 / naturalcubic basis=tpf(noint) knotmethod=percentiles(3));
     model ops_0_10 = spl / selection=none;
@@ -211,10 +211,10 @@ class randomization(ref="Control") study_site sex;
 sex study_site resting_sbp ckd_stage_value/solution;	lsmeans randomization/cl;
 run;
 
-proc sort data=out.score_wide;
+proc sort data=out.additional_scores_wide;
 by modified_hfc_0_10_1;
 run;
-proc glmselect data=out.score_wide;
+proc glmselect data=out.additional_scores_wide;
     effect spl = spline(modified_hfc_0_10_1  / naturalcubic basis=tpf(noint) 
                            knotmethod=percentiles(3)); 
     model modified_hfc_0_10  = spl / selection=none;
@@ -231,7 +231,7 @@ proc sgplot data=SplineOut;
 run;
 
 ods select ANOVA ParameterEstimates SplineKnots;
-proc glmselect data=out.score_wide
+proc glmselect data=out.additional_scores_wide
 outdesign(addinputvars fullmodel)=SplineBasis;
     effect spl = spline(modified_hfc_0_10_1 / naturalcubic basis=tpf(noint) knotmethod=percentiles(3));
     model modified_hfc_0_10 = spl / selection=none;
@@ -273,10 +273,10 @@ run;
 
 
 /** ============================== **/
-proc sort data=out.score_wide;
+proc sort data=out.additional_scores_wide;
 by qto_percent_1;
 run;
-proc glmselect data=out.score_wide;
+proc glmselect data=out.additional_scores_wide;
     effect spl = spline(qto_percent_1  / naturalcubic basis=tpf(noint) 
                            knotmethod=percentiles(3)); 
     model qto_percent  = spl / selection=none;
@@ -293,7 +293,7 @@ proc sgplot data=SplineOut;
 run;
 
 ods select ANOVA ParameterEstimates SplineKnots;
-proc glmselect data=out.score_wide
+proc glmselect data=out.additional_scores_wide
 outdesign(addinputvars fullmodel)=SplineBasis;
     effect spl = spline(qto_percent_1 / naturalcubic basis=tpf(noint) knotmethod=percentiles(3));
     model qto_percent = spl / selection=none;
@@ -333,12 +333,12 @@ sex study_site resting_sbp ckd_stage_value/solution;	lsmeans randomization/cl;
 run;
 
 /** =================== **/
-proc sort data=out.score_wide;
+proc sort data=out.additional_scores_wide;
 by modified_kcmo_0_100_1;
 run;
 
 /** modified_kcmo **/
-proc glmselect data=out.score_wide;
+proc glmselect data=out.additional_scores_wide;
     effect spl = spline(modified_kcmo_0_100_1  / naturalcubic basis=tpf(noint) 
                            knotmethod=percentiles(3)); 
     model modified_kcmo_0_100  = spl / selection=none;
@@ -355,7 +355,7 @@ proc sgplot data=SplineOut;
 run;
 
 ods select ANOVA ParameterEstimates SplineKnots;
-proc glmselect data=out.score_wide
+proc glmselect data=out.additional_scores_wide
 outdesign(addinputvars fullmodel)=SplineBasis;
     effect spl = spline(modified_kcmo_0_100_1 / naturalcubic basis=tpf(noint) knotmethod=percentiles(3));
     model modified_kcmo_0_100 = spl / selection=none;
@@ -409,10 +409,10 @@ ods pdf close;
 
 /*hfc_2022_full_0_12		qto_0_8		ops_0_10 
 
-proc sort data=out.score_wide;
+proc sort data=out.additional_scores_wide;
 by hfc_2022_full_0_12;
 run;
-proc glmselect data=out.score_wide;
+proc glmselect data=out.additional_scores_wide;
     effect spl = spline(hfc_2022_full_0_12_1  / naturalcubic basis=tpf(noint) 
                            knotmethod=percentiles(3)); 
     model hfc_2022_full_0_12  = spl / selection=none;
@@ -429,7 +429,7 @@ proc sgplot data=SplineOut;
 run;
 
 ods select ANOVA ParameterEstimates SplineKnots;
-proc glmselect data=out.score_wide
+proc glmselect data=out.additional_scores_wide
 outdesign(addinputvars fullmodel)=SplineBasis;
     effect spl = spline(hfc_2022_full_0_12_1 / naturalcubic basis=tpf(noint) knotmethod=percentiles(3));
     model hfc_2022_full_0_12 = spl / selection=none;
