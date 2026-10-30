@@ -40,7 +40,7 @@ run;
 NOTE: The data set WORK.MED_FOLLOWUP has 170 observations and 27 variables.
 */
 
-proc sort data=out.demographic_June ;
+proc sort data=out.demographics_baseline ;
 by record_ID;
 run;
 
@@ -50,7 +50,7 @@ run;
 
 
 data demo;
-set out.demographic_June;
+set out.demographics_baseline;
 hydralazine1=hydralazine;
 ace1=ace;
 beta1=beta;
@@ -199,7 +199,7 @@ else ARNA_Target_dose_PCT=ARNA_Target_dose;
 run;
 
 /** =============== Data saved for the Analysis =================== **/
-data out.med_Engagehf;
+data out.medications_analysis;
 set med_june;
 
 /** C4P_score calculation **/
@@ -266,8 +266,8 @@ run;
 
 
 
-data out.med_Engagehf;
-set  out.med_Engagehf;
+data out.medications_analysis;
+set  out.medications_analysis;
 
 if ACEscore=. then ACEscore=0;
 if  BBscore=. then  BBscore=0;
@@ -320,8 +320,8 @@ data pcom;
 run;
 
 /* Insert your path */
-%Include '<path>\Table.sas';
-%Table(dsn=out.med_Engagehf,
+%Include '<path>\macro_table.sas';
+%Table(dsn=out.medications_analysis,
 var =
 ace1 beta1  loop1
 sglt21 thiazide1 arna1 aldo1
@@ -352,20 +352,20 @@ ttitle1=Medications participants in the ENGAGE-HF study);
 ods pdf file="<path>\C4P_Analysis_Final.pdf";
 
 
-proc means data=out.med_Engagehf median q1 q3 maxdec=2;
+proc means data=out.medications_analysis median q1 q3 maxdec=2;
 var  C4P_score1 C4P_score ;
 run;
 
-proc means data=out.med_Engagehf maxdec=2 median q1 q3;
+proc means data=out.medications_analysis maxdec=2 median q1 q3;
 class randomization;
 var  C4P_score1 C4P_score ;
 run;
 
-proc sort data=out.med_Engagehf;
+proc sort data=out.medications_analysis;
 by C4P_score1;
 run;
 
-proc glmselect data=out.med_Engagehf;
+proc glmselect data=out.medications_analysis;
     effect spl = spline(C4P_score1  / naturalcubic basis=tpf(noint) 
                            knotmethod=percentiles(3)); 
     model C4P_score  = spl / selection=none;
@@ -382,7 +382,7 @@ proc sgplot data=SplineOut;
 run;
 
 ods select ANOVA ParameterEstimates SplineKnots;
-proc glmselect data=out.med_Engagehf
+proc glmselect data=out.medications_analysis
 outdesign(addinputvars fullmodel)=SplineBasis;
     effect spl = spline(C4P_score1 / naturalcubic basis=tpf(noint) knotmethod=percentiles(3));
     model C4P_score = spl / selection=none;
@@ -430,7 +430,7 @@ run;
 
 /** ================== 4 knots ======================= **/
 
-proc glmselect data=out.med_Engagehf;
+proc glmselect data=out.medications_analysis;
     effect spl = spline(C4P_score1  / naturalcubic basis=tpf(noint) 
                            knotmethod=percentiles(4)); 
     model C4P_score  = spl / selection=none;
@@ -449,14 +449,14 @@ run;
 
 
 ods select ANOVA ParameterEstimates SplineKnots;
-proc glmselect data=out.med_Engagehf
+proc glmselect data=out.medications_analysis
 outdesign(addinputvars fullmodel)=SplineBasis;
     effect spl = spline(C4P_score1 / naturalcubic basis=tpf(noint) knotmethod=percentiles(4));
     model C4P_score = spl / selection=none;
 quit;
 
 
-proc sort data=out.med_Engagehf;
+proc sort data=out.medications_analysis;
 by C4P_score1;
 run;
 /*

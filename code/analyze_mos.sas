@@ -33,14 +33,14 @@ run;
 %let today_macro = %sysfunc(today(), date9.);
 
 /** By Study Arms **/
-proc sort data=out.MOS_July_Final;
+proc sort data=out.mos_analysis;
 by randomization;
 run;
 
 /* Insert your path */
 
-%Include '<path>\Table.sas';
-%Table(dsn=out.MOS_July_Final,
+%Include '<path>\macro_table.sas';
+%Table(dsn=out.mos_analysis,
 var =
 MOS1_pct
 MOS2_pct,
@@ -53,15 +53,15 @@ meandec=2,
 ttitle1=MOS ENGAGE-HF study); 
 
 /** Examining by study sites **/
-proc sort data=out.MOS_July_Final;
+proc sort data=out.mos_analysis;
 by study_site;
 run;
 
 /* Insert your path */
 
 
-%Include '<path>\Table.sas';
-%Table(dsn=out.MOS_July_Final,
+%Include '<path>\macro_table.sas';
+%Table(dsn=out.mos_analysis,
 var =
 MOS1_pct
 MOS2_pct,
@@ -83,10 +83,10 @@ ttitle1=MOS ENGAGE-HF study);
 
 ods pdf file="<path>\MOS_Analysis_July.pdf";
 
-proc sort data=out.MOS_July_Final;
+proc sort data=out.mos_analysis;
 by MOS1_pct;
 run;
-proc glmselect data=out.MOS_July_Final;
+proc glmselect data=out.mos_analysis;
     effect spl = spline(MOS1_pct  / naturalcubic basis=tpf(noint) 
                            knotmethod=percentiles(3)); 
     model MOS2_pct  = spl / selection=none;
@@ -103,7 +103,7 @@ proc sgplot data=SplineOut;
 run;
 
 ods select ANOVA ParameterEstimates SplineKnots;
-proc glmselect data=out.MOS_July_Final
+proc glmselect data=out.mos_analysis
 outdesign(addinputvars fullmodel)=SplineBasis;
     effect spl = spline(MOS1_pct / naturalcubic basis=tpf(noint) knotmethod=percentiles(3));
     model MOS2_pct = spl / selection=none;
@@ -146,7 +146,7 @@ run;
 
 /** ================== with  4 knots ======================= **/
 
-proc glmselect data=out.MOS_July_Final;
+proc glmselect data=out.mos_analysis;
     effect spl = spline(MOS1_pct  / naturalcubic basis=tpf(noint) 
                            knotmethod=percentiles(4)); 
     model MOS2_pct  = spl / selection=none;
@@ -165,14 +165,14 @@ run;
 
 
 ods select ANOVA ParameterEstimates SplineKnots;
-proc glmselect data=out.MOS_July_Final
+proc glmselect data=out.mos_analysis
 outdesign(addinputvars fullmodel)=SplineBasis;
     effect spl = spline(MOS1_pct / naturalcubic basis=tpf(noint) knotmethod=percentiles(4));
     model MOS2_pct = spl / selection=none;
 quit;
 
 
-proc sort data=out.MOS_July_Final;
+proc sort data=out.mos_analysis;
 by MOS1_pct;
 run;
 
@@ -206,4 +206,3 @@ class randomization(ref="Control") study_site sex;
 run;
 
 ods pdf close;
-

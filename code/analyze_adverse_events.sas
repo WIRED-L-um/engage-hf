@@ -27,8 +27,8 @@ run;
 
 
 
-data out.AE_final;
-set out.AE_final;
+data out.adverse_events;
+set out.adverse_events;
 /** Brad provided and included in the RedCap **/
 date=mdy(12,22,2025);
 if  ae_yes_no not in ('',"No","UNK") and ae_start_date ne . then
@@ -68,7 +68,7 @@ proc sql;
 create table AE_event as select record_id,randomization,study_site, sum(INP) as INP,
 sum(death) as death, sum(ae_event) as ae_event, sum(sae_HF_event) as sae_HF_event ,
 sum(composite) as composite 
-from out.AE_final
+from out.adverse_events
 group by record_id;
 quit;
 
@@ -77,7 +77,7 @@ by _all_;
 run;
 
 data demo;
-set out.demographic_June;
+set out.demographics_baseline;
 keep record_id randomization study_site;
 run;
 
@@ -113,7 +113,7 @@ run;
 
 /* Insert your path */
 
-%Include '<path>\Table.sas';
+%Include '<path>\macro_table.sas';
 %Table(dsn=event,
 var =death sae_HF_event INP composite,
 by=randomization,
@@ -126,7 +126,7 @@ ttitle1=AE of the participants in the ENGAGE-HF study);
 
 /* Insert your path */
 
-%Include '<path>\Table.sas';
+%Include '<path>\macro_table.sas';
 %Table(dsn=event,
 var =death sae_HF_event INP composite,
 by=study_site,
@@ -142,33 +142,33 @@ ttitle1=AE of the participants in the ENGAGE-HF study);
 /* Insert your path */
 
 ods pdf file="<path>\AE_Analysis_final.pdf";
-proc phreg data=out.AE_final;
+proc phreg data=out.adverse_events;
     class randomization(ref="Control") sex study_site;
     model newtime_ae * composite(0) = randomization;
 run;
 
 
-proc phreg data=out.AE_final;
+proc phreg data=out.adverse_events;
     class randomization(ref="Control") sex study_site;
     model newtime_ae * composite(0) = randomization study_site age sex;
 run;
 
 
 
-proc phreg data=out.AE_final;
+proc phreg data=out.adverse_events;
     class randomization(ref="Control") sex study_site;
     model newtime_ae * INP(0) = randomization study_site age sex;
 run;
 
 
 
-proc phreg data=out.AE_final;
+proc phreg data=out.adverse_events;
     class randomization(ref="Control") sex study_site;
     model newtime_ae * sae_HF_event(0) = randomization study_site age sex;
 run;
 
 
-proc phreg data=out.AE_final;
+proc phreg data=out.adverse_events;
     class randomization(ref="Control") sex study_site;
     model newtime_ae* death(0) = randomization ;
 run;

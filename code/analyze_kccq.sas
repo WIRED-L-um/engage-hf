@@ -16,15 +16,15 @@
 /** =================== KCCQ Followup Data ==================== **/
 /*
 
-NOTE: OUT.KCCQ2 data set was successfully created.
-NOTE: The data set OUT.KCCQ2 has 129 observations and 11 variables.
+NOTE: OUT.kccq_followup data set was successfully created.
+NOTE: The data set OUT.kccq_followup has 129 observations and 11 variables.
 
 */
 
-/** Getting Baseline KCCQ from demographic_june File **/
+/** Getting Baseline KCCQ from demographics_baseline File **/
 
 data mdemographic_june;
-set out.demographic_june;
+set out.demographics_baseline;
 pnew_k23_clinsummary=k23_clinsummary+0;
 pnew_k23_soclimit=k23_soclimit+0;
 pnew_k23_sympstability=k23_sympstability+0;
@@ -56,15 +56,15 @@ k23_sympburden
 
 
 proc sql;
-create table kccq_base_june
+create table kccq_analysis
 as select * 
-from OUT.KCCQ2 as a, mdemographic_june as b
+from OUT.kccq_followup as a, mdemographic_june as b
 where a.record_id=b.record_id;
 quit;
 
 /** Data set was saved for the analysis **/
-data out.kccq_base_june;
-set kccq_base_june;
+data out.kccq_analysis;
+set kccq_analysis;
 run;
 
 
@@ -74,7 +74,7 @@ run;
 ods select ANOVA ParameterEstimates SplineKnots;
 ods pdf file="<path>\kccq_Analysis_3_4knots.pdf";
 
-proc glmselect data=out.kccq_base_june
+proc glmselect data=out.kccq_analysis
 outdesign(addinputvars fullmodel)=SplineBasis;
     effect spl = spline(pnew_k23_clinsummary / naturalcubic basis=tpf(noint) knotmethod=percentiles(3));
     model k23_clinsummary = spl / selection=none;
@@ -115,7 +115,7 @@ run;
 /** 4 knots */
 
 ods select ANOVA ParameterEstimates SplineKnots;
-proc glmselect data=out.kccq_base_june
+proc glmselect data=out.kccq_analysis
 outdesign(addinputvars fullmodel)=SplineBasis;
     effect spl = spline(pnew_k23_clinsummary / naturalcubic basis=tpf(noint) knotmethod=percentiles(4));
     model k23_clinsummary = spl / selection=none;
@@ -174,7 +174,7 @@ ods pdf close;
 ods select ANOVA ParameterEstimates SplineKnots;
 ods pdf file="<path>\Analysis_&x.pdf";
 
-proc glmselect data=out.kccq_base_June
+proc glmselect data=out.kccq_analysis
 outdesign(addinputvars fullmodel)=SplineBasis;
     effect spl = spline(pnew_&x / naturalcubic basis=tpf(noint) knotmethod=percentiles(3));
     model &x  = spl / selection=none;
@@ -198,9 +198,6 @@ ods pdf close;
 %mod(k23_sympburden);
 %mod(k23_sympfreq);
 %mod(k23_totalsymp);
-%mod(k23_sympburden;
+%mod(k23_sympburden);
 
 /** ================ END ===================== **/
-
-
-

@@ -25,8 +25,8 @@ run;
 
 
 
-data out.demographic_june;
-set out.demographic_june;
+data out.demographics_baseline;
+set out.demographics_baseline;
 
 length etiology_class $20. ;
 
@@ -169,13 +169,13 @@ run;
 %let today_macro = %sysfunc(today(), date9.);
 
 
-proc sort data=out.demographic_june;
+proc sort data=out.demographics_baseline;
 by randomization;
 run;
 /** Please include your path to the data forlder */
 
-%Include '<path>\Table.sas';
-%Table(dsn=out.demographic_june,
+%Include '<path>\macro_table.sas';
+%Table(dsn=out.demographics_baseline,
 var =
 age
 sex
@@ -249,6 +249,5 @@ dline=1 2 1 1 1 1 1 2 1 2 1	2 1	2 1	2
 1 2	1 2	1 2	1 2	1 2	1 2	1 2	1 2	
 1	2 1 2 1 1 2	1	1 1 2 1 2 1 2,
 ttitle1=Demographics of the participants in the ENGAGE-HF study); 
-
 
 
