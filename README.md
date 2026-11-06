@@ -54,3 +54,10 @@ The eight supplied files in [`data/`](./data/) are SAS data sets (`.sas7bdat`). 
 | [`additional_scores_wide.sas7bdat`](./data/additional_scores_wide.sas7bdat) | Baseline additional-score measures joined to non-enrollment event records for analysis.                                      | [`analyze_additional_scores.sas`](./code/analyze_additional_scores.sas)                                                                                                                                                                          | Derived output rebuilt from the long data set by the additional-score program, then used for spline-based models.                           |
 
 Some programs overwrite supplied data sets when run against the same `OUT` library. Use a separate working copy of the data to preserve the supplied files.
+
+## Author
+
+**Tanima Basu** is a Senior Statistician with Internal Medicine–Cardiology at Michigan Medicine and the Wearables In Reducing Risk and Enhancing Daily Lifestyle Center (WIRED-L), and a Senior Analyst with the Michigan Value Collaborative (MVC).
+
+- Email: [tanima@med.umich.edu](mailto:tanima@med.umich.edu)
+- GitHub: [btanima](https://github.com/btanima)
