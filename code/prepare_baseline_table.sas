@@ -13,16 +13,7 @@ value study_site_
 1='Johns Hopkins University' 
 2='Stanford University' 
 3='University of Michigan'; 
-
-value 	race 1="White"
-	2="African American or Black"
-	3="Asian"
-	4="American Indian or Alaska Indian"
-	5="Native Hawaiian"
-	6="Unknown";
 run;
-
-
 
 
 data out.demographics_baseline;
@@ -122,12 +113,12 @@ data mcom;
     nvar=11; _line=0.5; level="Ejection fraction";                     pvalue=" "; output;
     nvar=12; _line=0.5; level="Predominant etiology of heart failure"; pvalue=" "; output;
     nvar=13; _line=0.5; level="Heart rate";                             pvalue=" "; output;
-    nvar=14; line=0.5;  level="Resting DBP";                            pvalue=" "; output;
-    nvar=15; line=0.5;  level="Resting SBP";                            pvalue=" "; output;
+    nvar=14; _line=0.5;  level="Resting DBP";                            pvalue=" "; output;
+    nvar=15; _line=0.5;  level="Resting SBP";                            pvalue=" "; output;
     nvar=16; _line=0.5; level="ACEi/ARB";                              pvalue=" "; output;
     nvar=17; _line=0.5; level="Beta";                                  pvalue=" "; output;
-    nvar=18; line=0.5;  level="Loop";                                  pvalue=" "; output;
-    nvar=19; line=0.5;  level="sglt2";                                 pvalue=" "; output;
+    nvar=18; _line=0.5;  level="Loop";                                  pvalue=" "; output;
+    nvar=19; _line=0.5;  level="sglt2";                                 pvalue=" "; output;
     nvar=20; line=0.5;  level="Thiazide";                              pvalue=" "; output;
     nvar=21; line=0.5;  level="ACEi/ARB Target dose (PCT)";            pvalue=" "; output;
     nvar=22; line=0.5;  level="Beta Blocker Target dose (PCT)";        pvalue=" "; output;
@@ -157,12 +148,21 @@ data mcom;
     nvar=46; line=0.5;  level="Height (inches)";                        pvalue=" "; output;
     nvar=47; line=0.5;  level="CKD stage";                              pvalue=" "; output;
     nvar=48; line=0.5;  level="Index los";                              pvalue=" "; output;
-    nvar=49; line=0.5;  level="Race";                                   pvalue=" "; output;
-    nvar=50; line=0.5;  level="nyha k23";                               pvalue=" "; output;
-    nvar=51; line=0.5;  level="MRA";                                    pvalue=" "; output;
-    nvar=52; line=0.5;  level="ARNA";                                   pvalue=" "; output;
-    nvar=53; line=0.5;  level="ARNA Target Score";                      pvalue=" "; output;
-    nvar=54; line=0.5;  level="ACEi/ARB/ARNA Target Score";             pvalue=" "; output;
+    nvar=49; line=0.5;  level="White";                                   pvalue=" "; output;
+    nvar=50; line=0.5;  level="African American";                              pvalue=" "; output;
+    nvar=51; line=0.5;  level="Asian";                                   pvalue=" "; output;
+    nvar=52; line=0.5;  level="Native Hawaiian";                              pvalue=" "; output;
+	nvar=53; line=0.5;  level="American Indian/Alaska Indian";              pvalue=" "; output;
+    nvar=54; line=0.5;  level="Race-NA";                                   pvalue=" "; output;
+    nvar=55; line=0.5;  level="Race-NASK";                                   pvalue=" "; output;
+    nvar=56; line=0.5;  level="Race-NI";                                   pvalue=" "; output;
+    nvar=57; line=0.5;  level="Race-Other";                                   pvalue=" "; output;
+    nvar=58; line=0.5;  level="Race-Unknown";                                   pvalue=" "; output;
+    nvar=59; line=0.5;  level="NYHA k23";                               pvalue=" "; output;
+    nvar=60; line=0.5;  level="MRA";                                    pvalue=" "; output;
+    nvar=61; line=0.5;  level="ARNA";                                   pvalue=" "; output;
+    nvar=62; line=0.5;  level="ARNA Target Score";                      pvalue=" "; output;
+    nvar=63; line=0.5;  level="ACEi/ARB/ARNA Target Score";             pvalue=" "; output;
 run;
 
 
@@ -222,7 +222,16 @@ weight_pounds
 height_inches
 ckd_stage_code
 index_los
-race_ethnicity
+is_race_white
+is_race_black_or_african_america
+is_race_asian 
+is_race_native_hawaiian_or_other 
+is_race_american_indian_or_alask
+is_race_NA
+is_race_NASK
+is_race_NI
+is_race_OTH
+is_race_UNK
 nyha_k23
 aldo
 ARNA
@@ -231,23 +240,22 @@ mace_Target_dose,
 by=randomization,
 type= c d d d d c c c c c c d c c c d d d d d 
       c c d d d d d d d d d d d c c c c c c c
-      c c c d c c d c d d d d c c,
+      c c c d c c d c d d d d d d d d d d d d d c c,
 ptype= te ch ch ch ch te te te te te te ch te te te ch ch ch ch ch
        te te ch ch ch ch ch ch ch  ch ch ch te te te te te te te te  
-	   te te te ch te te ch te ch ch ch ch te te,
+	   te te te ch te te ch te ch ch ch ch ch ch ch  ch ch ch ch ch ch te te,
 labelwrap=y,
-outdoc=<path>\Table1_&today_macro.rtf,
+outdoc=<path>\Table1_&today_macro,
 meandec=2,
 comments=mcom,
 dvar= 1 1 2 3 4 5 6 6 7 7 8 8 9 9 10 10	11 11 12 13 13	14 14 15 15	16 16 17 17 18 18 19 19 20 20 21 21 22 22
 23	24 24 25 25	26 26 27 27 28 28 29 29 30 30 31 31 32 32 33 33 34 34 35 35 36 36 37 37 38 38 39 39 40 40
-41 41 42 42 43 43 44 45 45 46 46 47 47 48 48 49 49 50 50 51 51 52 53 53 54 54 ,
+41 41 42 42 43 43 44 45 45 46 46 47 47 48 48 49 49 50 50 51 51 52 52
+53 53 54 54 55 55 56 56 57 57 58 58 59 59 60 60 61 61 62 62 63 63,
 dline=1 2 1 1 1 1 1 2 1 2 1	2 1	2 1	2 
-1 2 1 2	1 2	1	2 1	2 1	2 1 2  1 2	1 2	1
-1 2 1	2 1 1	2 1	2 1	2 1	2 1	2 1	2 1 2
+1 2 1	1 2	1	2 1	2 1	2 1 2  1 2	1 2	1 2
+1 2 1 2 1 1	2 1	2 1	2 1	2 1	2 1	2 1 2
 1 2	1 2	1 2 1 2	1 2	1 2	1 2	1 2	1 2	1 2
-1 2	1 2	1 2	1 2	1 2	1 2	1 2	1 2	
-1	2 1 2 1 1 2	1	1 1 2 1 2 1 2,
+1 2	1 2	1 2	1	1 2	1 2	1 2	1 2	
+1 2 1 2 1 2 1 2	1 2	1 2	1 2 1 2	1 2	1 2	1 2	1 2	1 2	1 2 1 2,
 ttitle1=Demographics of the participants in the ENGAGE-HF study); 
-
-
